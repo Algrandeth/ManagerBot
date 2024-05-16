@@ -51,7 +51,7 @@ namespace Template
                     num++;
                     if (num > num2)
                     {
-                        _ = Logger.LogCritical("Database error: " + ex.Message);
+                        throw;
                     }
                 }
 

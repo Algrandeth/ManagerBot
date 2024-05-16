@@ -49,7 +49,7 @@ namespace TelegramBotFramework
                 }
                 catch (Exception) { }
 
-            await Task.Delay(TimeSpan.FromHours(3));
+            await Task.Delay(TimeSpan.FromHours(2));
             Environment.Exit(0);
         }
 

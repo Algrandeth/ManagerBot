@@ -191,7 +191,7 @@ namespace Template.Entities
             else if (nextCallback.Data == "Отменить")
             {
                 await bot.BotClient.SendTextMessageAsync(update.Message.Chat.Id, "<b>Рассылка отменена.</b>", parseMode: ParseMode.Html);
-            }//await AdminPanel(update, nextCallback);
+            }
         }
     }
 }

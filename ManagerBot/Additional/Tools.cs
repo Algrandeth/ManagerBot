@@ -1,9 +1,11 @@
-﻿using System.Data;
+﻿using System.ComponentModel;
+using System.Data;
 using System.Runtime.CompilerServices;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TelegramBotFramework;
+using Template.Data;
 using Template.Monitoring;
 
 namespace Template.Additional
@@ -12,6 +14,13 @@ namespace Template.Additional
     {
         private static readonly PgProvider pg = new(Bot.DatabaseConnectionString);
         private static string sqlQuery = "";
+
+
+        public static async Task NotifyAdmins(ITelegramBotClient botClient, string text)
+        {
+            foreach (var admin in Config.Config.Admins)
+                await botClient.SendTextMessageAsync(admin, text, parseMode: ParseMode.Html);
+        }
 
 
         public static async Task DeleteDeadUsers(ITelegramBotClient botClient, UpdateInfo update)

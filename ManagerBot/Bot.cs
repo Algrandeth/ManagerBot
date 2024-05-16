@@ -60,7 +60,6 @@ namespace Template
             catch (Exception ex)
             {
                 await Logger.LogCritical(ex.Message + " " + ex.StackTrace);
-                await BotClient.SendTextMessageAsync(638232468, $"{(ex.InnerException != null ? ex.InnerException.Message + ex.StackTrace : ex.Message, ex.StackTrace)}");
             }
         }
 
@@ -91,14 +90,34 @@ namespace Template
             if (Config.Config.Admins.Any(a => a == update.Message.Chat.Id))
                 switch (update.Message.Text)
                 {
+                    case "/start": await CommandsHandler.AdminPanel(update); return;
+
                     case "/stats": await CommandsHandler.UserStatistics(update); return;
+                    case "Статистика": await CommandsHandler.UserStatistics(update); return;
+
                     case "/download_users": await CommandsHandler.DownloadUsers(update); return;
+
                     case "/mailing": await CommandsHandler.Mailing(update); return;
+                    case "Рассылка": await CommandsHandler.Mailing(update); return;                                 
+
+                    case "/set_days": await CommandsHandler.SetDays(update); return;
+                    case "Установить расписание": await CommandsHandler.SetDays(update); return;
+
+                    case "/my_schedule": await CommandsHandler.AdminSchedule(update); return;
+                    case "Актуальные записи": await CommandsHandler.AdminSchedule(update); return;
                 }
 
             switch (update.Message.Text)
             {
                 case "/start": await CommandsHandler.Start(update); return;
+
+                case "/sign_up": await CommandsHandler.GetAvailableSchedule(update); return;
+                case "Запись на занятие": await CommandsHandler.GetAvailableSchedule(update); return;
+
+
+                case "/my_schedule": await CommandsHandler.UserSchedule(update); return;
+                case "Мои записи": await CommandsHandler.UserSchedule(update); return;
+
             }
         }
 

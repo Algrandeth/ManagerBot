@@ -1,0 +1,20 @@
+{
+  "profiles": {
+    "Docker": {
+      "commandName": "Docker",
+      "environmentVariables": {
+        "BOT_TOKEN": "7029862529:AAHAdkGAox8CP7KziRMPsygHFAEkOjqSMGg",
+        "ADMIN_LIST": "638232468, 694063917",
+        "POSTGRE_STRING": "Host=83.147.247.130:5432;Database=manager_bot;Username=grand;Password=vlD6GCDM8dbsE9UXq0zz"
+      }
+    },
+    "ManagerBot": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "BOT_TOKEN": "7132520381:AAH2VEdU3QWlNiZx6oABrMZEVVpnT4Bbk78",
+        "ADMIN_LIST": "638232468, 694063917",
+        "POSTGRE_STRING": "Host=83.147.247.130:5432;Database=manager_bot;Username=grand;Password=vlD6GCDM8dbsE9UXq0zz"
+      }
+    }
+  }
+}

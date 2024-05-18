@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using ManagerBot.Data;
+using System.ComponentModel;
 using System.Data;
 using System.Runtime.CompilerServices;
 using Telegram.Bot;
@@ -45,7 +46,7 @@ namespace Template.Additional
                     }
                     catch (Exception)
                     {
-                        await DeleteUserFromDB(user);
+                        await DisableUserInDB(user);
                         deletedUsers++;
                         Thread.Sleep(50);
                         continue;
@@ -80,23 +81,35 @@ namespace Template.Additional
                                            username,
                                            created_at)
                                    values ({user.Id},
-                                           '{user.Username}',
+                                           {(user.Username != null ? $"'{user.Username}'" : "null")},
                                             {DateTime.Now.ToTimeStamp()})";
                 pg.ExecuteSqlQueryAsEnumerable(sqlQuery);
 
                 await Logger.LogMessage($"Добавлен пользователь {user.Id} {(user.Username != null ? $"@{user.Username}" : null)}");
             }
+            else
+            {
+                var userData = Database.GetUser(user.Id);
+                if (userData.Active == false)
+                {
+
+                    sqlQuery = $@"update users set active = true where user_id = {user.Id}";
+                    pg.ExecuteSqlQueryAsEnumerable(sqlQuery);
+
+                    await Logger.LogMessage($"Добавлен пользователь {user.Id} {(user.Username != null ? $"@{user.Username}" : "")}");
+                }
+            }
         }
 
 
-        public static async Task DeleteUserFromDB(User user)
+        public static async Task DisableUserInDB(User user)
         {
             sqlQuery = $@"select 1
                               from users
                               where user_id = {user.Id}";
             if (pg.ExecuteSqlQueryAsEnumerable(sqlQuery).Any())
             {
-                sqlQuery = $@"delete from users where user_id = {user.Id}";
+                sqlQuery = $@"update users set active = false where user_id = {user.Id}";
                 pg.ExecuteSqlQueryAsEnumerable(sqlQuery);
 
                 await Logger.LogMessage($"Удален пользователь {user.Id} {(user.Username != null ? $"@{user.Username}" : "")}");

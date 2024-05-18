@@ -25,5 +25,15 @@ namespace Template.Data
             public long UserID { get; set; }
             public string ID { get; set; }
         }
+
+
+        public class User
+        {
+            public string Username { get; set; }
+            public long ID { get; set; }
+            public DateTime CreatedAt { get; set; }
+            public string Phone { get; set; }
+            public bool Active { get; set; }
+        }
     }
 }

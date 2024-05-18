@@ -1,4 +1,6 @@
-﻿using Telegram.Bot;
+﻿using ManagerBot.Data;
+using System.Globalization;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramBotFramework;
 using Template.Additional;
@@ -21,6 +23,9 @@ namespace Template
             CommandsStore.InitCommandList();
 
             DatabaseConnectionString = Config.Config.PostgreConnectionString;
+            CultureInfo culture = new CultureInfo("ru-RU");
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
 
             Bot bot = new(Config.Config.BotToken);
 
@@ -44,7 +49,7 @@ namespace Template
                             {
                                 if (update.Update.MyChatMember.NewChatMember is ChatMemberBanned)
                                 {
-                                    await Tools.DeleteUserFromDB(update.Update.MyChatMember.From);
+                                    await Tools.DisableUserInDB(update.Update.MyChatMember.From);
                                 }
 
 
@@ -106,6 +111,10 @@ namespace Template
                     case "/my_schedule": await CommandsHandler.AdminSchedule(update); return;
                     case "Актуальные записи": await CommandsHandler.AdminSchedule(update); return;
                 }
+
+            var user = Database.GetUser(update.Message.Chat.Id);
+                if (user.Username != update.Message.Chat.Username)
+                    await Database.EditUser(user.ID, $"{(update.Message.Chat.Username != null ? $"'{update.Message.Chat.Username}'" : "null")}");
 
             switch (update.Message.Text)
             {

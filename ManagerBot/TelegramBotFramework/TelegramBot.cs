@@ -75,9 +75,6 @@ namespace TelegramBotFramework
                 if (update.Id <= _lastUpdateId) return;
                 _lastUpdateId = update.Id;
 
-                if (update.Message != null)
-                    await Tools.AddUserToDB(update.Message.From!);
-
 
                 switch (update.Type)
                 {
@@ -224,14 +221,14 @@ namespace TelegramBotFramework
 
 
         /// <summary> Awaiting user next message </summary>
-        public async Task<MsgCategory> NewMessage(UpdateInfo update, CancellationToken ct = default)
+        private async Task<MsgCategory> NewMessage(UpdateInfo update, CancellationToken ct = default)
         {
             while (true)
             {
                 switch (await NextEvent(update, ct))
                 {
                     case UpdateKind.NewMessage
-                        when update.MsgCategory is MsgCategory.Text or MsgCategory.MediaOrDoc or MsgCategory.StickerOrDice:
+                        when update.MsgCategory is MsgCategory.Text or MsgCategory.MediaOrDoc or MsgCategory.StickerOrDice or MsgCategory.Sharing:
                         return update.MsgCategory;
 
                     case UpdateKind.CallbackQuery:
@@ -304,7 +301,7 @@ namespace TelegramBotFramework
             while (awaited)
             {
                 var newMessage = await NewMessage(update, ct);
-                if (newMessage == MsgCategory.Text || newMessage == MsgCategory.MediaOrDoc) awaited = false;
+                if (newMessage == MsgCategory.Text || newMessage == MsgCategory.Sharing) awaited = false;
                 if (update.CallbackData == "Назад") return new Message { Text = "Назад" };
             }
 

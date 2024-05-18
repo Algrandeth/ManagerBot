@@ -2,6 +2,7 @@
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBotFramework;
+using Template.Additional;
 
 namespace Template.Entities
 {
@@ -18,6 +19,8 @@ namespace Template.Entities
         /// <summary> Start command handler </summary>
         public async Task Start(UpdateInfo update)
         {
+            await Tools.AddUserToDB(update.Message.From!);
+
             var replyMsg = "👋 <b>Привет! Здесь вы можете записаться на занятие по роликам 🛼</b>\n\n";
 
             await bot.BotClient.SendTextMessageAsync(update.Message.Chat.Id, replyMsg, parseMode: ParseMode.Html, replyMarkup: new ReplyKeyboardMarkup(new List<KeyboardButton[]>()

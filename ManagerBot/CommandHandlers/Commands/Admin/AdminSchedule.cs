@@ -38,7 +38,7 @@ namespace Template.Entities
                 signsButtons.Add(new InlineKeyboardButton[]
                 {
                     new($"{signs[i].Date.ToString("M")} {DateTime.Parse(signs[i].Time.ToString()):t}") { CallbackData = $"Get_{signs[i].ID}" },
-                    new('@' + signs[i].Username) { Url = $"https://t.me/{signs[i].Username}" },
+                    new(signs[i].Username.Contains("+") ? $"{signs[i].Username}" : $"@{signs[i].Username}") { Url = $"https://t.me/{signs[i].Username}" },
                 });
             }
 
@@ -108,7 +108,7 @@ namespace Template.Entities
         {
             var sign = Database.GetSigns(signID: signID).First();
 
-            var replyMsg = $"<b>Пользователь: @{sign.Username}</b>\n" +
+            var replyMsg = $"<b>Пользователь: {(sign.Username.Contains("+") ? $"<code>{sign.Username}</code>" : $"@{sign.Username}")}</b>\n" +
                            $"<b>Дата: <code>{sign.Date:D}</code></b>\n" +
                            $"<b>Время: <code>{DateTime.Parse(sign.Time.ToString()):t}</code></b>\n" +
                            $"<b>Длительность: <code>{(sign.TimeSpan == 1 ? "60 минут" : "90 минут")}</code></b>";

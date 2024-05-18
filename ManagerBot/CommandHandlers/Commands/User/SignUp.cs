@@ -114,18 +114,48 @@ namespace Template.Entities
 
         private async Task SignUp(UpdateInfo update, CallbackQuery? callback, string selectedDate)
         {
+            var replyMsg = "";
+
+            bool phoneRequested = false;
+            string? phoneNumber = null;
+            if (update.Message.Chat.Username == null)
+            {
+                var user = Database.GetUser(update.Message.Chat.Id);
+                if (user.Phone == null)
+                {
+                    await bot.BotClient.DeleteMessageAsync(update.Message.Chat.Id, callback.Message.MessageId);
+                    replyMsg = $"<b>Пожалуйста, предоставьте ваш номер телефона для контакта с вами, нажав на кнопку ниже.\n\n" +
+                               $"Если вы не хотите оставлять номер - вы можете установить <code><i>Имя пользователя</i></code> в настройках, в разделе <code><i>Мой аккаунт</i></code>.\n\nПосле этого нажмите /sign_up снова.</b>";
+
+                    var messageToDelete = (await bot.BotClient.SendTextMessageAsync(update.Message.Chat.Id, replyMsg, parseMode: ParseMode.Html, replyMarkup: new ReplyKeyboardMarkup(new List<KeyboardButton>
+                    {
+                        new("Дать контакт") { RequestContact = true }
+                    }){ ResizeKeyboard = true })).MessageId;
+
+                    var userPhone = await bot.NewFullMessage(update);
+                    if (userPhone == null) return;
+
+                    await Database.EditUser(update.Message.Chat.Id, phone: userPhone.Contact!.PhoneNumber);
+
+                    await bot.BotClient.DeleteMessageAsync(update.Message.Chat.Id, userPhone.MessageId);
+                    await bot.BotClient.DeleteMessageAsync(update.Message.Chat.Id, messageToDelete);
+
+                    phoneNumber = userPhone.Contact!.PhoneNumber;
+                    phoneRequested = true;
+                }
+            }
+
             var signData = new Structures.Sign()
             {
-                Username = update.Message.Chat.Username,
+                Username = update.Message.Chat.Username ?? phoneNumber,
                 UserID = update.Message.Chat.Id,
                 Date = DateTime.Parse(selectedDate)
             };
 
-
-
             #region Выбор длительности занятия
-            var replyMsg = $"<b>Выбранная дата: <code>{DateTime.Parse(selectedDate).ToString("D")}</code></b>\n\n" +
-                           "<b>Выберите интересующую вас длительность занятия 👇🏻</b>";
+            replyMsg = $"<b>Ваш контакт для связи: <code>{(update.Message.Chat.Username != null ? $"@{signData.Username}" : $"{phoneNumber}")}</code></b>\n" +
+                       $"<b>Выбранная дата: <code>{DateTime.Parse(selectedDate).ToString("D")}</code></b>\n\n" +
+                       "<b>Выберите интересующую вас длительность занятия 👇🏻</b>";
             var inlineKeyboard = new InlineKeyboardMarkup(new[]
             {
                 new InlineKeyboardButton[]
@@ -139,7 +169,10 @@ namespace Template.Entities
                 }
             });
 
-            await bot.BotClient.EditMessageTextAsync(update.Message.Chat.Id, callback.Message.MessageId, replyMsg, parseMode: ParseMode.Html, replyMarkup: inlineKeyboard);
+            if (phoneRequested == false)
+                await bot.BotClient.EditMessageTextAsync(update.Message.Chat.Id, callback.Message.MessageId, replyMsg, parseMode: ParseMode.Html, replyMarkup: inlineKeyboard);
+            else
+                await bot.BotClient.SendTextMessageAsync(update.Message.Chat.Id, replyMsg, parseMode: ParseMode.Html, replyMarkup: inlineKeyboard);
             #endregion
 
             #region Выбор времени занятия
@@ -177,7 +210,8 @@ namespace Template.Entities
             }
             hoursButtons.Add(new InlineKeyboardButton[] { new InlineKeyboardButton("👈🏻 Назад") { CallbackData = "Back" } });
 
-            replyMsg = $"<b>Выбранная дата: <code>{DateTime.Parse(selectedDate).ToString("D")}</code></b>\n" +
+            replyMsg = $"<b>Ваш контакт для связи: <code>{(update.Message.Chat.Username != null ? $"@{signData.Username}" : $"{phoneNumber}")}</code></b>\n" +
+                       $"<b>Выбранная дата: <code>{DateTime.Parse(selectedDate).ToString("D")}</code></b>\n" +
                         $"<b>Выбранный Длительность: <code>{(signData.TimeSpan == 1 ? "60 минут" : "90 минут")}</code></b>\n\n" +
                         $"<b>Выберите интересующее вас время 👇🏻</b>";
             await bot.BotClient.EditMessageTextAsync(update.Message.Chat.Id, callback.Message.MessageId, replyMsg, ParseMode.Html, replyMarkup: new InlineKeyboardMarkup(hoursButtons));
@@ -191,9 +225,10 @@ namespace Template.Entities
 
             signData.Time = TimeSpan.Parse(callback.Data);
 
-            replyMsg = $"<b>Выбранная дата: <code>{DateTime.Parse(selectedDate).ToString("D")}</code></b>\n" +
-                        $"<b>Выбранный Длительность: <code>{(signData.TimeSpan == 1 ? "60 минут" : "90 минут")}</code></b>\n" +
+            replyMsg = $"<b>Ваш контакт для связи: <code>{(update.Message.Chat.Username != null ? $"@{signData.Username}" : $"{phoneNumber}")}</code></b>\n" +
+                       $"<b>Выбранная дата: <code>{DateTime.Parse(selectedDate).ToString("D")}</code></b>\n" +
                         $"<b>Выбранное время: <code>{DateTime.Parse(callback.Data):t}</code></b>\n\n" +
+                        $"<b>Выбранная длительность: <code>{(signData.TimeSpan == 1 ? "60 минут" : "90 минут")}</code></b>\n" +
                         $"<b>Все верно? Подтверждаем? 👇🏻</b>";
             inlineKeyboard = new InlineKeyboardMarkup(new InlineKeyboardButton[]
             {
@@ -230,7 +265,7 @@ namespace Template.Entities
                 await bot.BotClient.EditMessageTextAsync(update.Message.Chat.Id, callback.Message.MessageId, $"<b>✅ Вы успешно записались! С вами свяжутся.</b>", parseMode: ParseMode.Html);
 
                 var notifyAdminsMessage = $"<b>Новая запись! ✅</b>\n\n" +
-                    $"<b>Пользователь: @{signData.Username}</b>\n" +
+                    $"<b>Контакт: <code>{(update.Message.Chat.Username != null ? $"@{signData.Username}" : $"{phoneNumber}")}</code></b>\n" +
                     $"<b>Дата: <code>{signData.Date:D}</code></b>\n" +
                     $"<b>Время: <code>{DateTime.Parse(signData.Time.ToString()):t}</code></b>\n" +
                     $"<b>Длительность: <code>{(signData.TimeSpan == 1 ? "60 минут" : "90 минут")}</code></b>";

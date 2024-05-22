@@ -14,7 +14,8 @@ namespace Template.Entities
     {
         public async Task AdminSchedule(UpdateInfo update, CallbackQuery? callback = null, int page = 1)
         {
-            if (!pg.ExecuteSqlQueryAsEnumerable($"select 1 from signs where is_active = true").Any())
+            var signs = Database.GetSigns(page: page, is_active: true);
+            if (signs.Any() == false)
             {
                 if (callback != null)
                     await bot.BotClient.EditMessageTextAsync(update.Message.Chat.Id, callback.Message.MessageId, $"<b>Записи отсутствуют! ❌</b>", parseMode: ParseMode.Html);
@@ -23,16 +24,7 @@ namespace Template.Entities
                 return;
             }
 
-            var signs = Database.GetSigns(page: page, is_active: true);
             var signsButtons = new List<InlineKeyboardButton[]>();
-
-            if (signs.Any() == false)
-            {
-                page--;
-                await AdminSchedule(update, callback, page);
-                return;
-            }
-
             for (int i = 0; i < signs.Count; i++)
             {
                 signsButtons.Add(new InlineKeyboardButton[]

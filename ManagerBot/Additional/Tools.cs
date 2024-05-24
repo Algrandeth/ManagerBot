@@ -72,8 +72,8 @@ namespace Template.Additional
         public static async Task AddUserToDB(User user)
         {
             sqlQuery = $@"select 1
-                              from users
-                              where user_id = {user.Id}";
+                          from users
+                          where user_id = {user.Id}";
             if (!pg.ExecuteSqlQueryAsEnumerable(sqlQuery).Any())
             {
                 sqlQuery = $@"insert into users

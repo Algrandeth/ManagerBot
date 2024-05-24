@@ -114,6 +114,7 @@ namespace Template.Entities
 
         private async Task SignUp(UpdateInfo update, CallbackQuery? callback, string selectedDate)
         {
+            #region Запрос номера, если отсутствует юзернейм
             var replyMsg = "";
 
             bool phoneRequested = false;
@@ -125,7 +126,7 @@ namespace Template.Entities
                 {
                     await bot.BotClient.DeleteMessageAsync(update.Message.Chat.Id, callback.Message.MessageId);
                     replyMsg = $"<b>Пожалуйста, предоставьте ваш номер телефона для контакта с вами, нажав на кнопку ниже.\n\n" +
-                               $"Если вы не хотите оставлять номер - вы можете установить <code><i>Имя пользователя</i></code> в настройках, в разделе <code><i>Мой аккаунт</i></code>.\n\nПосле этого нажмите /sign_up снова.</b>";
+                               $"Если вы не хотите оставлять номер - вы можете установить <code><i>Имя пользователя</i></code> в <a href=\"tg://settings/edit_profile/\">настройках</a>.\n\nПосле этого нажмите /sign_up снова.</b>";
 
                     var messageToDelete = (await bot.BotClient.SendTextMessageAsync(update.Message.Chat.Id, replyMsg, parseMode: ParseMode.Html, replyMarkup: new ReplyKeyboardMarkup(new List<KeyboardButton>
                     {
@@ -135,7 +136,12 @@ namespace Template.Entities
 
                     var userPhone = await bot.NewFullMessage(update);
                     if (userPhone == null) return;
-
+                    if (userPhone.Contact == null)
+                    {
+                        await bot.BotClient.SendTextMessageAsync(update.Message.Chat.Id, $"Вы не нажали на кнопку <code>Дать контакт</code>, попробуйте заново.", parseMode: ParseMode.Html);
+                        return;
+                    }
+                    
                     await Database.EditUser(update.Message.Chat.Id, phone: userPhone.Contact!.PhoneNumber);
 
                     await bot.BotClient.DeleteMessageAsync(update.Message.Chat.Id, userPhone.MessageId);
@@ -147,6 +153,8 @@ namespace Template.Entities
                 else
                     phoneNumber = user.Phone;
             }
+
+            #endregion
 
             var signData = new Structures.Sign()
             {

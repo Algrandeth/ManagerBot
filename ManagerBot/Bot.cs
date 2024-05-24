@@ -112,8 +112,9 @@ namespace Template
                     case "Актуальные записи": await CommandsHandler.AdminSchedule(update); return;
                 }
 
+            await Tools.AddUserToDB(update.Message.From!);
             var user = Database.GetUser(update.Message.Chat.Id);
-                if (user.Username != update.Message.Chat.Username)
+                if (user != null && user.Username != update.Message.Chat.Username)
                     await Database.EditUser(user.ID, $"{(update.Message.Chat.Username != null ? $"'{update.Message.Chat.Username}'" : "null")}");
 
             switch (update.Message.Text)

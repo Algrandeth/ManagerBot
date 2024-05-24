@@ -73,7 +73,7 @@ namespace ManagerBot.Data
         }
 
 
-        public static Structures.User GetUser(long userID)
+        public static Structures.User? GetUser(long userID)
         {
             var sql = $@"select user_id, username, created_at, phone, active
                           from users

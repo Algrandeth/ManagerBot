@@ -16,7 +16,7 @@
 
 1) Запись на прием в доступные даты и время
 
-![image](https://github.com/user-attachments/assets/1e864b57-647e-4dae-ac7c-7d4fb48c8b7e)
+![image](https://github.com/user-attachments/assets/253bff85-a84e-4c5a-a36f-f7170bfe32d6)
 ![image](https://github.com/user-attachments/assets/0fd45df2-31ef-41f3-b757-6e00f8cc830e)
 ![image](https://github.com/user-attachments/assets/79522e50-30bf-49e1-bbc2-1c0b37f25b78)
 ![image](https://github.com/user-attachments/assets/3833dbf5-f76f-40ae-b41b-30758668540c)

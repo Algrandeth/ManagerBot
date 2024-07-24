@@ -113,9 +113,9 @@ namespace Template
                 }
 
             await Tools.AddUserToDB(update.Message.From!);
-            var user = Database.GetUser(update.Message.Chat.Id);
+            var user = Db.GetUser(update.Message.Chat.Id);
                 if (user != null && user.Username != update.Message.Chat.Username)
-                    await Database.EditUser(user.ID, $"{(update.Message.Chat.Username != null ? $"'{update.Message.Chat.Username}'" : "null")}");
+                    await Db.EditUser(user.ID, $"{(update.Message.Chat.Username != null ? $"'{update.Message.Chat.Username}'" : "null")}");
 
             switch (update.Message.Text)
             {

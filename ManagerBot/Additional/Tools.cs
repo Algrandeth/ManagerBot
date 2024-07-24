@@ -89,7 +89,7 @@ namespace Template.Additional
             }
             else
             {
-                var userData = Database.GetUser(user.Id);
+                var userData = Db.GetUser(user.Id);
                 if (userData.Active == false)
                 {
 

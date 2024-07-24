@@ -21,7 +21,7 @@ namespace Template.Entities
                 return;
             }
 
-            var days = Database.GetDays(page: page, isAvailable: true);
+            var days = Db.GetDays(page: page, isAvailable: true);
             var daysButtons = new List<InlineKeyboardButton[]>();
 
             if (days.Any() == false)
@@ -120,7 +120,7 @@ namespace Template.Entities
             string? phoneNumber = null;
             if (update.Message.Chat.Username == null)
             {
-                var user = Database.GetUser(update.Message.Chat.Id);
+                var user = Db.GetUser(update.Message.Chat.Id);
                 if (user!.Phone == null)
                 {
                     if (callback != null)
@@ -143,7 +143,7 @@ namespace Template.Entities
                         return;
                     }
 
-                    await Database.EditUser(update.Message.Chat.Id, phone: userPhone.Contact!.PhoneNumber);
+                    await Db.EditUser(update.Message.Chat.Id, phone: userPhone.Contact!.PhoneNumber);
 
                     await bot.BotClient.DeleteMessageAsync(update.Message.Chat.Id, userPhone.MessageId);
                     await bot.BotClient.DeleteMessageAsync(update.Message.Chat.Id, messageToDelete);
@@ -238,8 +238,8 @@ namespace Template.Entities
 
             signData.TimeSpan = Convert.ToInt32(callback.Data);
 
-            var thisDateSigns = Database.GetSigns(date: selectedDate);
-            var thisDateData = Database.GetDays(date: selectedDate).First();
+            var thisDateSigns = Db.GetSigns(date: selectedDate);
+            var thisDateData = Db.GetDays(date: selectedDate).First();
 
             var availableHours = new List<TimeSpan?>();
             for (int hour = thisDateData.OpenTime.Hours; hour < thisDateData.CloseTime.Hours + 1; hour++)

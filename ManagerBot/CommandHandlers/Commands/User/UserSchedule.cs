@@ -14,7 +14,7 @@ namespace Template.Entities
     {
         public async Task UserSchedule(UpdateInfo update, CallbackQuery? callback = null, int page = 1)
         {
-            var signs = Database.GetSigns(page: page, is_active: true, user_id: update.Message.Chat.Id);
+            var signs = Db.GetSigns(page: page, is_active: true, user_id: update.Message.Chat.Id);
             if (signs.Any() == false)
             {
                 if (callback != null)
@@ -97,7 +97,7 @@ namespace Template.Entities
 
         private async Task GetSign(UpdateInfo update, string signID, CallbackQuery callback)
         {
-            var sign = Database.GetSigns(signID: signID).First();
+            var sign = Db.GetSigns(signID: signID).First();
 
             var replyMsg = $"<b>Дата: <code>{sign.Date:D}</code></b>\n" +
                            $"<b>Время: <code>{DateTime.Parse(sign.Time.ToString()):t}</code></b>\n" +

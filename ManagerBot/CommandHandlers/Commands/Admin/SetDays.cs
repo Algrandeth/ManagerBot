@@ -46,7 +46,7 @@ namespace Template.Entities
         /// <summary> Setting main admin schedule </summary>
         public async Task SetDays(UpdateInfo update, CallbackQuery? callback = null, int page = 1)
         {
-            var days = Database.GetDays(page: page);
+            var days = Db.GetDays(page: page);
             var daysButtons = new List<InlineKeyboardButton[]>
             {
                 new InlineKeyboardButton[] { "Дата", "Доступ", "Открытие", "Закрытие" }

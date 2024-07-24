@@ -14,7 +14,7 @@ namespace Template.Entities
     {
         public async Task AdminSchedule(UpdateInfo update, CallbackQuery? callback = null, int page = 1)
         {
-            var signs = Database.GetSigns(page: page, is_active: true);
+            var signs = Db.GetSigns(page: page, is_active: true);
             if (signs.Any() == false)
             {
                 if (callback != null)
@@ -98,7 +98,7 @@ namespace Template.Entities
 
         private async Task GetSign_Admin(UpdateInfo update, string signID, CallbackQuery? callback, int page)
         {
-            var sign = Database.GetSigns(signID: signID).First();
+            var sign = Db.GetSigns(signID: signID).First();
 
             var replyMsg = $"<b>Пользователь: {(sign.Username.Contains("+") ? $"<code>{sign.Username}</code>" : $"@{sign.Username}")}</b>\n" +
                            $"<b>Дата: <code>{sign.Date:D}</code></b>\n" +

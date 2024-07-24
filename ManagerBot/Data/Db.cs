@@ -6,7 +6,7 @@ using Template.Monitoring;
 
 namespace ManagerBot.Data
 {
-    public static class Database
+    public static class Db
     {
         private static readonly PgProvider pg = new(Bot.DatabaseConnectionString);
 

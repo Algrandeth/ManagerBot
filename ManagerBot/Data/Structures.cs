@@ -6,7 +6,7 @@ namespace Template.Data
     public class Structures
     {
 
-        public struct Day
+        public class Day
         {
             public bool IsAvailable { get; set; }
             public TimeSpan OpenTime { get; set; }

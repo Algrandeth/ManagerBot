@@ -91,19 +91,19 @@ namespace Template.Entities
             if (callback.Data.Contains("Get"))
             {
                 string signID = new Regex(@"_(.*)").Match(callback.Data).Groups[1].Value;
-                await GetSign_Admin(update, signID, callback);
+                await GetSign_Admin(update, signID, callback, page);
             }
         }
 
 
-        private async Task GetSign_Admin(UpdateInfo update, string signID, CallbackQuery callback)
+        private async Task GetSign_Admin(UpdateInfo update, string signID, CallbackQuery? callback, int page)
         {
             var sign = Database.GetSigns(signID: signID).First();
 
             var replyMsg = $"<b>Пользователь: {(sign.Username.Contains("+") ? $"<code>{sign.Username}</code>" : $"@{sign.Username}")}</b>\n" +
                            $"<b>Дата: <code>{sign.Date:D}</code></b>\n" +
                            $"<b>Время: <code>{DateTime.Parse(sign.Time.ToString()):t}</code></b>\n" +
-                           $"<b>Длительность: <code>{(sign.TimeSpan == 1 ? "60 минут" : "90 минут")}</code></b>";
+                           $"<b>Длительность: <code>{sign.TimeSpan} минут</code></b>\n";
 
             var inlineKeyboard = new InlineKeyboardMarkup(new[]
             {
@@ -137,12 +137,12 @@ namespace Template.Entities
                     await bot.BotClient.SendTextMessageAsync(sign.UserID, $"<b>❌ Ваша запись на <code>{sign.Date.ToString("dd MMMM")} {DateTime.Parse(sign.Time.ToString()):t}</code> была отменена администратором!</b>", parseMode: ParseMode.Html);
                 }
                 catch (Exception) { }
-                    await AdminSchedule(update, callback);
+                    await AdminSchedule(update, callback, page);
             }
 
             else
             {
-                await AdminSchedule(update, callback);
+                await AdminSchedule(update, callback, page);
             }
         }
     }

@@ -323,7 +323,7 @@ namespace Template.Entities
 
             replyMsg = $"<b>Ваш контакт для связи: <code>{(update.Message.Chat.Username != null ? $"@{signData.Username}" : $"{phoneNumber}")}</code></b>\n" +
                        $"<b>Выбранная дата: <code>{DateTime.Parse(selectedDate).ToString("D")}</code></b>\n" +
-                       $"<b>Выбранная длительность: <code>{signData.TimeSpan} минут</code></b>\n" +
+                       $"<b>Выбранная длительность: <code>{signData.TimeSpan} минут</code></b>\n\n" +
                        $"<b>Выберите интересующее вас время 👇🏻</b>";
             await bot.BotClient.EditMessageTextAsync(update.Message.Chat.Id, callback.Message.MessageId, replyMsg, ParseMode.Html, replyMarkup: new InlineKeyboardMarkup(hoursButtons));
             #endregion
